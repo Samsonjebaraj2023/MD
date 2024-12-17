@@ -15,7 +15,7 @@
 2. Each payment can create a student payment record
 3. Each payment can generate an invoice
 
-![Payment Diagarm](images/payment.png)
+![Payment Diagarm](images/Payment.png)
 -----------------------------------------------------------
 
 ## Session/Slot Flow 
