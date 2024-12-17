@@ -1,0 +1,196 @@
+THREE TYPES OF PARAMETER 
+     >>IN
+     >>OUT
+     >>INOUT
+=============================================
+Before we creating a procedure we need to change a DELIMITER First
+>> DELIMITER $$ 
+After Done with procedure we need to change a DELIMITER as default
+>> DELIMITER ; 
+=================================================================
+IN
+----------------------------------
+ DELIMITER $$
+ CREATE PROCEDURE empcount (IN jdes VARCHAR(10))
+ BEGIN
+    DECLARE total INT ;
+    SELECT COUNT(emp_id) INTO total FORM employee WHERE job_des=jdes ;
+    SELECT total;
+ END$$
+ DELIMITER ;
+---------------------------------
+CALL empcount("admin");
+
+===================================================================
+OUT 
+-------------------------------
+DELIMITER $$
+ CREATE PROCEDURE empcount (IN jdes VARCHAR(10) OUT total INT )
+ BEGIN
+    DECLARE total INT ;
+    SELECT COUNT(emp_id) INTO total FORM employee WHERE job_des=jdes ;
+ END$$
+ DELIMITER ;
+--------------------------------
+CALL empcount("admin",@total);
+SELECT @total; // TO display the result 
+===================================================================
+INOUT
+---------------------------------
+DELIMITER $$                    
+ CREATE PROCEDURE increment (INOUT counter INT, IN incre INT)
+ BEGIN
+    SET counter = counter + incre
+ END$$
+ DELIMITER ;
+---------------------------------
+SET counter = 5;
+CALL increment(@counter,2) 
+SELECT @counter ;   // Upto this the output will be 7
+CALL increment(@counter,3)
+SELECT @counter ; // Adding the before value and display a result as
+ 7(already in before stored value ) + 3 (new value to increament)= 10
+=====================================================================
+
+
+
+=====================================================================
+IF Statement 
+-----------------
+DELIMITER $$
+CREATE PROCEDURE total (IN id INT)
+BEGIN
+  IF id = 1 or id = 2 THEN 
+     SELECT 'Tamil Nadu';
+  ELSEIF id=3 THEN
+     SELECT "Maharastra"
+  ELSE id =4 
+     SELECT "Andra pradish";
+  ENDIF;
+END
+DELIMITER ;
+-------------------------
+CALL total(1);// Output will be Tamil Nadu
+======================================================================
+SWITCH CASE 
+-------------------------
+ DELIMITER $$
+ CREATE PROCEDURE total (IN id INT)
+ BEGIN
+   CASE id 
+      WHEN 3 THEN 
+        SELECT "Maharastra";
+      WHEN 4 THEN 
+        SELECT "Andra Pradesh";
+      ELSE 
+        SELECT "Tamil Nadu" ;
+ END
+ DELIMITER ;
+-------------------------
+CALL total(3);// Output will be Maharastra
+=====================================================================
+LOOPS 
+Problem : To find a value from 1-10 // 1 2 3 4 5 6 7 8 ....
+------------------------
+DELIMITER $$
+CREATE PROCEDURE loopdemo()
+begin
+DECLARE i INT;
+DECLARE str VARCHAR(50);
+SET i = 0 ;
+SET str = ' ';
+loopbranch1: LOOP
+	IF i > 10 THEN 
+       LEAVE loopbranch1 ;
+	end if ;
+    SET i = i+1;
+    SET str =  CONCAT(str,i," ");
+    END LOOP ;
+SELECT str;
+END $$
+DELIMITER ;
+--------------------------
+CALL loopdemo();
+======================================================================
+WHILE 
+Problem : To find a value from 1-10 // 1 2 3 4 5 6 7 8 ....
+-------------------------
+DELIMITER $$
+CREATE PROCEDURE loopdemo()
+begin
+DECLARE i INT;
+DECLARE str VARCHAR(50);
+SET i = 0 ;
+SET str = ' ';
+WHILE i < 10 DO 
+   SET i = i+1;
+   SET str =  CONCAT(str,i," ");
+END WHILE ;
+SELECT str;
+END $$
+DELIMITER ;
+--------------------------
+CALL loopdemo();
+====================================================================
+REPEAT
+
+  >In repeat we give a condition statement in before end repeat 
+but in WHILE we'll give a condition in first then execute
+  >In REPEAT we use to find the codition is UNTIL
+ 
+Problem : To find a value from 1-10 // 1 2 3 4 5 6 7 8 ....
+-------------------------
+DELIMITER $$
+CREATE PROCEDURE loopdemo()
+begin
+DECLARE i INT;
+DECLARE str VARCHAR(50);
+SET i = 0 ;
+SET str = ' ';
+REPEAT 
+   SET i = i+1;
+   SET str =  CONCAT(str,i," ");
+UNTIL i > 10 ;
+END REPEAT;
+SELECT str;
+END $$
+DELIMITER ;
+--------------------------
+CALL loopdemo();
+===================================================================
+Functions can be either deterministic or nondeterministic. 
+>>A deterministic function always returns the same results 
+if given the same input values.
+>>A nondeterministic function may return different results every time 
+it is called, even when the same input values are provided.
+================================================================
+FUNCTION 
+ 
+  In function we can call in a query but in other hand in stored procedure we can't
+
+-------------------------
+SELECT ename,getbrachadd(branch_id) from employee;
+------------------------
+DELIMITER $$
+CREATE FUNCTION getbranchadd (IN id INT)
+BEGIN
+  RETURN VARCHAR(50);
+  DECLARE str VARCHAR(50);
+  DETERMINISTIC
+    SELECT CONCAT(batch_addr , branch_name) INTO str
+    FROM branch WHERE branch_id = id;
+  RETURN str; 
+END $$
+-------------------------
+
+==================================================================
+CURSOR
+
+For to copy a entire table into a another table means we can use CURSOR 
+
+>> Step 1 : to create a same table attribute like which is primary 
+            key and varchar 
+>> step 2 : Create a stored procedure and declare a variable  and 
+            set handler as 0 if handler is 1 means we need to stop the loop
+>> step 3 : Using loop  we can do a process until it is over , 
+            then end the loop and procedure 
